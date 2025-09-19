@@ -26,50 +26,46 @@
         }
         
         body {
-            background-color: #f5f7fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
             line-height: 1.6;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            min-height: 100vh;
             padding: 20px;
         }
         
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
         
-        .header-content {
+        .header-with-photo {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), 
+                        url('images/mi-foto.jpg') center/cover no-repeat;
+            color: white;
+            padding: 40px 25px;
+            text-align: center;
+            min-height: 250px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            justify-content: center;
         }
         
-        .header-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .header-with-photo h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         
-        .header-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .header-text {
-            text-align: center;
+        .header-with-photo p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
         
         h1, h2, h3 {
@@ -317,26 +313,6 @@
             opacity: 1;
         }
         
-        /* Para dispositivos más grandes */
-        @media (min-width: 768px) {
-            .header-content {
-                flex-direction: row;
-                text-align: left;
-            }
-            
-            .header-text {
-                flex: 1;
-            }
-        }
-        
-        /* Para dispositivos pequeños */
-        @media (max-width: 480px) {
-            .header-image {
-                width: 120px;
-                height: 120px;
-            }
-        }
-        
         @media (max-width: 768px) {
             .plans-container, .results {
                 flex-direction: column;
@@ -356,22 +332,28 @@
                 width: 90%;
                 padding: 12px 20px;
             }
+            
+            .header-with-photo {
+                padding: 30px 15px;
+                min-height: 200px;
+            }
+            
+            .header-with-photo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header-with-photo p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="header-content">
-                <div class="header-image">
-                    <img src="images/mi-foto.jpeg" alt="Calculadora de Punto de Equilibrio">
-                </div>
-                <div class="header-text">
-                    <h1>Calculadora de Punto de Equilibrio</h1>
-                    <p>Calcula cuántas ventas necesitas para alcanzar tus metas</p>
-                </div>
-            </div>
-        </header>
+        <div class="header-with-photo">
+            <h1>Calculadora de Punto de Equilibrio</h1>
+            <p>Calcula cuántas ventas necesitas para alcanzar tus metas</p>
+        </div>
         
         <!-- Selector de moneda -->
         <div class="card">
