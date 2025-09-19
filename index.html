@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Punto de Equilibrio</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --basico: #95a5a6;
+            --recomendado: #3498db;
+            --premium: #2ecc71;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .header-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .header-text {
+            text-align: center;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .card-header h2 {
+            margin-bottom: 0;
+        }
+        
+        .card-content {
+            margin-top: 20px;
+        }
+        
+        .card.collapsed .card-content {
+            display: none;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .card.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.danger {
+            background-color: var(--danger);
+        }
+        
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        button.success {
+            background-color: var(--success);
+        }
+        
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        .expense-item input {
+            flex: 1;
+        }
+        
+        .plans-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .plan {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .plan-basico {
+            border-top: 4px solid var(--basico);
+        }
+        
+        .plan-recomendado {
+            border-top: 4px solid var(--recomendado);
+        }
+        
+        .plan-premium {
+            border-top: 4px solid var(--premium);
+        }
+        
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .result-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card.plan-basico {
+            border-top: 4px solid var(--basico);
+        }
+        
+        .result-card.plan-recomendado {
+            border-top: 4px solid var(--recomendado);
+        }
+        
+        .result-card.plan-premium {
+            border-top: 4px solid var(--premium);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--light);
+        }
+        
+        .summary {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .currency-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .ganancia-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .ganancia-selector input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        
+        .ganancia-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ganancia-input input {
+            flex: 1;
+        }
+        
+        .save-container {
+            position: sticky;
+            bottom: 20px;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            z-index: 100;
+        }
+        
+        .save-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--success);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        /* Para dispositivos más grandes */
+        @media (min-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                text-align: left;
+            }
+            
+            .header-text {
+                flex: 1;
+            }
+        }
+        
+        /* Para dispositivos pequeños */
+        @media (max-width: 480px) {
+            .header-image {
+                width: 120px;
+                height: 120px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .plans-container, .results {
+                flex-direction: column;
+            }
+            
+            .expense-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .ganancia-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .save-button {
+                width: 90%;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-image">
+                    <img src="images/mi-foto.jpg" alt="Calculadora de Punto de Equilibrio">
+                </div>
+                <div class="header-text">
+                    <h1>Calculadora de Punto de Equilibrio</h1>
+                    <p>Calcula cuántas ventas necesitas para alcanzar tus metas</p>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Selector de moneda -->
+        <div class="card">
+            <div class="currency-selector">
+                <label for="moneda">Selecciona la moneda:</label>
+                <select id="moneda">
+                    <option value="$" selected>Dólar ($)</option>
+                    <option value="€">Euro (€)</option>
+                    <option value="£">Libra (£)</option>
+                    <option value="¥">Yen (¥)</option>
+                    <option value="₿">Bitcoin (₿)</option>
+                    <option value="₹">Rupia India (₹)</option>
+                    <option value="₽">Rublo Ruso (₽)</option>
+                    <option value="₩">Won Surcoreano (₩)</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Sección 1: Meta de ganancia -->
+        <div class="card">
+            <h2>1. Meta de Ganancia</h2>
+            <div class="input-group">
+                <label for="meta-ganancia">Meta de ganancia libre por encima del equilibrio (<span class="currency-symbol">$</span>)</label>
+                <input type="number" id="meta-ganancia" min="0" value="5000">
+            </div>
+        </div>
+        
+        <!-- Sección 2: Gastos fijos -->
+        <div class="card collapsed" id="gastos-fijos-card">
+            <div class="card-header" onclick="toggleSection('gastos-fijos-card')">
+                <h2>2. Gastos Fijos</h2>
+                <span class="toggle-icon">▶</span>
+            </div>
+            <div class="card-content">
+                <div id="gastos-fijos-container">
+                    <!-- Los gastos fijos se añadirán aquí dinámicamente -->
+                </div>
+                <button onclick="agregarGastoFijo()">+ Añadir Gasto Fijo</button>
+                
+                <div class="summary">
+                    <h3>Total Gastos Fijos: <span id="total-gastos-fijos">0</span> <span class="currency-symbol">$</span></h3>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección 3: Gastos variables por plan -->
+        <div class="card collapsed" id="gastos-variables-card">
+            <div class="card-header" onclick="toggleSection('gastos-variables-card')">
+                <h2>3. Gastos Variables por Plan</h2>
+                <span class="toggle-icon">▶</span>
+            </div>
+            <div class="card-content">
+                <div class="plans-container">
+                    <!-- Plan Básico -->
+                    <div class="plan plan-basico">
+                        <h3>Plan Básico</h3>
+                        <div id="gastos-basico-container">
+                            <!-- Los gastos variables del plan básico se añadirán aquí dinámicamente -->
+                        </div>
+                        <button onclick="agregarGastoVariable('basico')">+ Añadir Gasto Variable</button>
+                        <div class="summary">
+                            <h4>Total Gastos Variables: <span id="total-gastos-basico">0</span> <span class="currency-symbol">$</span></h4>
+                        </div>
+                    </div>
+                    
+                    <!-- Plan Recomendado -->
+                    <div class="plan plan-recomendado">
+                        <h3>Plan Recomendado</h3>
+                        <div id="gastos-recomendado-container">
+                            <!-- Los gastos variables del plan recomendado se añadirán aquí dinámicamente -->
+                        </div>
+                        <button onclick="agregarGastoVariable('recomendado')">+ Añadir Gasto Variable</button>
+                        <div class="summary">
+                            <h4>Total Gastos Variables: <span id="total-gastos-recomendado">0</span> <span class="currency-symbol">$</span></h4>
+                        </div>
+                    </div>
+                    
+                    <!-- Plan Premium -->
+                    <div class="plan plan-premium">
+                        <h3>Plan Premium</h3>
+                        <div id="gastos-premium-container">
+                            <!-- Los gastos variables del plan premium se añadirán aquí dinámicamente -->
+                        </div>
+                        <button onclick="agregarGastoVariable('premium')">+ Añadir Gasto Variable</button>
+                        <div class="summary">
+                            <h4>Total Gastos Variables: <span id="total-gastos-premium">0</span> <span class="currency-symbol">$</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección 4: Ganancia por plan -->
+        <div class="card">
+            <h2>4. Ganancia por Plan</h2>
+            <div class="plans-container">
+                <div class="plan plan-basico">
+                    <h3>Plan Básico</h3>
+                    <div class="ganancia-selector">
+                        <label>
+                            <input type="radio" name="tipo-ganancia-basico" value="fija" checked> Ganancia fija
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo-ganancia-basico" value="porcentaje"> Porcentaje
+                        </label>
+                    </div>
+                    <div class="ganancia-input">
+                        <input type="text" id="ganancia-basico" value="10">
+                        <span id="ganancia-basico-suffix">$</span>
+                    </div>
+                </div>
+                <div class="plan plan-recomendado">
+                    <h3>Plan Recomendado</h3>
+                    <div class="ganancia-selector">
+                        <label>
+                            <input type="radio" name="tipo-ganancia-recomendado" value="fija" checked> Ganancia fija
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo-ganancia-recomendado" value="porcentaje"> Porcentaje
+                        </label>
+                    </div>
+                    <div class="ganancia-input">
+                        <input type="text" id="ganancia-recomendado" value="15">
+                        <span id="ganancia-recomendado-suffix">$</span>
+                    </div>
+                </div>
+                <div class="plan plan-premium">
+                    <h3>Plan Premium</h3>
+                    <div class="ganancia-selector">
+                        <label>
+                            <input type="radio" name="tipo-ganancia-premium" value="fija" checked> Ganancia fija
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo-ganancia-premium" value="porcentaje"> Porcentaje
+                        </label>
+                    </div>
+                    <div class="ganancia-input">
+                        <input type="text" id="ganancia-premium" value="20">
+                        <span id="ganancia-premium-suffix">$</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección 5: Distribución de ventas y cálculos -->
+        <div class="card">
+            <h2>5. Distribución de Ventas y Cálculos</h2>
+            <div class="plans-container">
+                <div class="plan">
+                    <h3>Proporción de Ventas</h3>
+                    <div class="input-group">
+                        <label for="peso-basico">Plan Básico (proporción)</label>
+                        <input type="number" id="peso-basico" min="0" value="40">
+                    </div>
+                    <div class="input-group">
+                        <label for="peso-recomendado">Plan Recomendado (proporción)</label>
+                        <input type="number" id="peso-recomendado" min="0" value="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="peso-premium">Plan Premium (proporción)</label>
+                        <input type="number" id="peso-premium" min="0" value="10">
+                    </div>
+                    <div class="summary">
+                        <h4>Total Proporción: <span id="total-peso">70</span></h4>
+                        <p>Estos valores representan la proporción de ventas, no porcentajes.</p>
+                    </div>
+                </div>
+                
+                <div class="plan">
+                    <h3>Ventas Necesarias</h3>
+                    <div class="input-group">
+                        <label>Para equilibrio: <span id="ventas-equilibrio">0</span> ventas</label>
+                    </div>
+                    <div class="input-group">
+                        <label>Para meta: <span id="ventas-meta">0</span> ventas</label>
+                    </div>
+                    <div class="input-group">
+                        <label>Total: <span id="ventas-total">0</span> ventas</label>
+                    </div>
+                    <div class="input-group">
+                        <label>Desglose por plan (para equilibrio):</label>
+                        <p>Básico: <span id="ventas-basico">0</span></p>
+                        <p>Recomendado: <span id="ventas-recomendado">0</span></p>
+                        <p>Premium: <span id="ventas-premium">0</span></p>
+                    </div>
+                    <div class="input-group">
+                        <label>Desglose por plan (para meta):</label>
+                        <p>Básico: <span id="ventas-meta-basico">0</span></p>
+                        <p>Recomendado: <span id="ventas-meta-recomendado">0</span></p>
+                        <p>Premium: <span id="ventas-meta-premium">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección 6: Tabla de precios con impuestos -->
+        <div class="card collapsed" id="precios-impuestos-card">
+            <div class="card-header" onclick="toggleSection('precios-impuestos-card')">
+                <h2>6. Precios con Impuestos</h2>
+                <span class="toggle-icon">▶</span>
+            </div>
+            <div class="card-content">
+                <div class="input-group">
+                    <label for="impuesto">Porcentaje de Impuesto (%)</label>
+                    <input type="number" id="impuesto" min="0" value="21">
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Precio Base</th>
+                            <th>Impuesto</th>
+                            <th>Precio Total</th>
+                            <th>Ganancia Neta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Básico</td>
+                            <td id="precio-base-basico">0 <span class="currency-symbol">$</span></td>
+                            <td id="impuesto-basico">0 <span class="currency-symbol">$</span></td>
+                            <td id="precio-total-basico">0 <span class="currency-symbol">$</span></td>
+                            <td id="ganancia-neta-basico">0 <span class="currency-symbol">$</span></td>
+                        </tr>
+                        <tr>
+                            <td>Recomendado</td>
+                            <td id="precio-base-recomendado">0 <span class="currency-symbol">$</span></td>
+                            <td id="impuesto-recomendado">0 <span class="currency-symbol">$</span></td>
+                            <td id="precio-total-recomendado">0 <span class="currency-symbol">$</span></td>
+                            <td id="ganancia-neta-recomendado">0 <span class="currency-symbol">$</span></td>
+                        </tr>
+                        <tr>
+                            <td>Premium</td>
+                            <td id="precio-base-premium">0 <span class="currency-symbol">$</span></td>
+                            <td id="impuesto-premium">0 <span class="currency-symbol">$</span></td>
+                            <td id="precio-total-premium">0 <span class="currency-symbol">$</span></td>
+                            <td id="ganancia-neta-premium">0 <span class="currency-symbol">$</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Sección 7: Tarjetas de resumen -->
+        <div class="card">
+            <h2>7. Resumen</h2>
+            
+            <h3>Para el Empresario</h3>
+            <div class="results">
+                <div class="result-card plan-basico">
+                    <h4>Plan Básico</h4>
+                    <p>Costo variable: <span id="resumen-costo-basico">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="resumen-impuesto-basico">0</span>%</p>
+                    <p>Ganancia por unidad: <span id="resumen-ganancia-basico">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+                <div class="result-card plan-recomendado">
+                    <h4>Plan Recomendado</h4>
+                    <p>Costo variable: <span id="resumen-costo-recomendado">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="resumen-impuesto-recomendado">0</span>%</p>
+                    <p>Ganancia por unidad: <span id="resumen-ganancia-recomendado">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+                <div class="result-card plan-premium">
+                    <h4>Plan Premium</h4>
+                    <p>Costo variable: <span id="resumen-costo-premium">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="resumen-impuesto-premium">0</span>%</p>
+                    <p>Ganancia por unidad: <span id="resumen-ganancia-premium">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+            </div>
+            
+            <h3>Para el Cliente</h3>
+            <div class="results">
+                <div class="result-card plan-basico">
+                    <h4>Plan Básico</h4>
+                    <p>Precio Base: <span id="cliente-precio-base-basico">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="cliente-impuesto-basico">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Precio Total: <span id="cliente-precio-total-basico">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+                <div class="result-card plan-recomendado">
+                    <h4>Plan Recomendado</h4>
+                    <p>Precio Base: <span id="cliente-precio-base-recomendado">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="cliente-impuesto-recomendado">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Precio Total: <span id="cliente-precio-total-recomendado">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+                <div class="result-card plan-premium">
+                    <h4>Plan Premium</h4>
+                    <p>Precio Base: <span id="cliente-precio-base-premium">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Impuesto: <span id="cliente-impuesto-premium">0</span> <span class="currency-symbol">$</span></p>
+                    <p>Precio Total: <span id="cliente-precio-total-premium">0</span> <span class="currency-symbol">$</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botón de guardar datos -->
+        <div class="save-container">
+            <button class="success save-button" onclick="guardarDatos()">💾 Guardar Datos</button>
+        </div>
+        
+        <!-- Notificación -->
+        <div class="notification" id="notification">Datos guardados correctamente</div>
+    </div>
+
+    <script>
+        // Variables globales
+        let gastosFijos = [];
+        let gastosVariables = {
+            basico: [],
+            recomendado: [],
+            premium: []
+        };
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos guardados si existen
+            cargarDatosGuardados();
+            
+            // Configurar valores por defecto si no hay datos guardados
+            if (!localStorage.getItem('calculadoraDatos')) {
+                configurarValoresPorDefecto();
+            }
+            
+            // Configurar event listeners para inputs
+            configurarEventListeners();
+            
+            // Calcular inicialmente
+            calcularTodo();
+        });
+        
+        // Función para expandir/contraer secciones
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+        
+        function configurarValoresPorDefecto() {
+            // Establecer moneda a dólar
+            document.getElementById('moneda').value = '$';
+            
+            // Actualizar símbolos de moneda
+            document.querySelectorAll('.currency-symbol').forEach(el => {
+                el.textContent = '$';
+            });
+            
+            // Configurar gastos fijos por defecto
+            const gastosFijosPorDefecto = [
+                { concepto: 'Nomina', valor: 3000 },
+                { concepto: 'Arriendo', valor: 1000 },
+                { concepto: 'Servicios públicos', valor: 350 },
+                { concepto: 'Maquinas y mantenimiento', valor: 1000 },
+                { concepto: 'Software y licencias', valor: 200 }
+            ];
+            
+            const containerGastosFijos = document.getElementById('gastos-fijos-container');
+            containerGastosFijos.innerHTML = '';
+            
+            gastosFijosPorDefecto.forEach(gasto => {
+                const nuevoGasto = document.createElement('div');
+                nuevoGasto.className = 'expense-item';
+                nuevoGasto.innerHTML = `
+                    <input type="text" placeholder="Concepto" class="gasto-fijo-concepto" value="${gasto.concepto}">
+                    <input type="number" placeholder="Cantidad" min="0" class="gasto-fijo-valor" value="${gasto.valor}">
+                    <button class="danger" onclick="quitarGastoFijo(this)">Eliminar</button>
+                `;
+                containerGastosFijos.appendChild(nuevoGasto);
+            });
+            
+            // Actualizar gastos fijos
+            actualizarGastosFijos();
+            
+            // Configurar gastos variables por defecto para cada plan
+            const gastosVariablesPorDefecto = {
+                basico: [
+                    { concepto: 'Materiales', valor: 12 },
+                    { concepto: 'Publicidad', valor: 12 },
+                    { concepto: 'Nomina vendedores', valor: 12 },
+                    { concepto: 'Biaticos', valor: 12 },
+                    { concepto: 'Devoluciones', valor: 12 },
+                    { concepto: 'Imprevistos', valor: 12 },
+                    { concepto: 'Horas de trabajo', valor: 12 }
+                ],
+                recomendado: [
+                    { concepto: 'Materiales', valor: 20 },
+                    { concepto: 'Publicidad', valor: 20 },
+                    { concepto: 'Nomina vendedores', valor: 20 },
+                    { concepto: 'Biaticos', valor: 12 },
+                    { concepto: 'Devoluciones', valor: 20 },
+                    { concepto: 'Imprevistos', valor: 20 },
+                    { concepto: 'Horas de trabajo', valor: 20 }
+                ],
+                premium: [
+                    { concepto: 'Materiales', valor: 30 },
+                    { concepto: 'Publicidad', valor: 30 },
+                    { concepto: 'Nomina vendedores', valor: 40 },
+                    { concepto: 'Biaticos', valor: 40 },
+                    { concepto: 'Devoluciones', valor: 40 },
+                    { concepto: 'Imprevistos', valor: 40 },
+                    { concepto: 'Horas de trabajo', valor: 80 },
+                    { concepto: 'Exclusividad', valor: 120 },
+                    { concepto: 'servicios premium VIP', valor: 40 }
+                ]
+            };
+            
+            // Configurar gastos variables para cada plan
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const container = document.getElementById(`gastos-${plan}-container`);
+                container.innerHTML = '';
+                
+                gastosVariablesPorDefecto[plan].forEach(gasto => {
+                    const nuevoGasto = document.createElement('div');
+                    nuevoGasto.className = 'expense-item';
+                    nuevoGasto.innerHTML = `
+                        <input type="text" placeholder="Concepto" class="gasto-var-concepto" data-plan="${plan}" value="${gasto.concepto}">
+                        <input type="number" placeholder="Cantidad" min="0" class="gasto-var-valor" data-plan="${plan}" value="${gasto.valor}">
+                        <button class="danger" onclick="quitarGastoVariable(this, '${plan}')">Eliminar</button>
+                    `;
+                    container.appendChild(nuevoGasto);
+                });
+                
+                // Actualizar gastos variables del plan
+                actualizarGastosVariables(plan);
+            });
+            
+            // Actualizar sufijos de ganancia
+            actualizarSufijosGanancia();
+        }
+        
+        function configurarEventListeners() {
+            // Selector de moneda
+            document.getElementById('moneda').addEventListener('change', function() {
+                const moneda = this.value;
+                document.querySelectorAll('.currency-symbol').forEach(el => {
+                    el.textContent = moneda;
+                });
+                actualizarSufijosGanancia();
+                calcularTodo();
+            });
+            
+            // Gastos fijos - delegación de eventos
+            document.getElementById('gastos-fijos-container').addEventListener('input', function(e) {
+                if (e.target.classList.contains('gasto-fijo-valor') || e.target.classList.contains('gasto-fijo-concepto')) {
+                    actualizarGastosFijos();
+                    calcularTodo();
+                }
+            });
+            
+            // Gastos variables - delegación de eventos
+            const contenedoresVariables = [
+                'gastos-basico-container',
+                'gastos-recomendado-container',
+                'gastos-premium-container'
+            ];
+            
+            contenedoresVariables.forEach(contenedor => {
+                document.getElementById(contenedor).addEventListener('input', function(e) {
+                    if (e.target.classList.contains('gasto-var-valor') || e.target.classList.contains('gasto-var-concepto')) {
+                        const plan = e.target.getAttribute('data-plan');
+                        actualizarGastosVariables(plan);
+                        calcularTodo();
+                    }
+                });
+            });
+            
+            // Selectores de tipo de ganancia
+            document.querySelectorAll('input[name^="tipo-ganancia-"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    actualizarSufijosGanancia();
+                    calcularTodo();
+                });
+            });
+            
+            // Inputs de ganancia
+            document.getElementById('ganancia-basico').addEventListener('input', calcularTodo);
+            document.getElementById('ganancia-recomendado').addEventListener('input', calcularTodo);
+            document.getElementById('ganancia-premium').addEventListener('input', calcularTodo);
+            
+            // Pesos de ventas
+            document.getElementById('peso-basico').addEventListener('input', calcularTodo);
+            document.getElementById('peso-recomendado').addEventListener('input', calcularTodo);
+            document.getElementById('peso-premium').addEventListener('input', calcularTodo);
+            
+            // Impuesto
+            document.getElementById('impuesto').addEventListener('input', calcularTodo);
+            
+            // Meta de ganancia
+            document.getElementById('meta-ganancia').addEventListener('input', calcularTodo);
+        }
+        
+        function actualizarSufijosGanancia() {
+            const moneda = document.getElementById('moneda').value;
+            
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const tipoGanancia = document.querySelector(`input[name="tipo-ganancia-${plan}"]:checked`).value;
+                const suffixElement = document.getElementById(`ganancia-${plan}-suffix`);
+                
+                if (tipoGanancia === 'fija') {
+                    suffixElement.textContent = moneda;
+                } else {
+                    suffixElement.textContent = '%';
+                }
+            });
+        }
+        
+        function agregarGastoFijo() {
+            const container = document.getElementById('gastos-fijos-container');
+            const nuevoGasto = document.createElement('div');
+            nuevoGasto.className = 'expense-item';
+            nuevoGasto.innerHTML = `
+                <input type="text" placeholder="Concepto" class="gasto-fijo-concepto">
+                <input type="number" placeholder="Cantidad" min="0" class="gasto-fijo-valor">
+                <button class="danger" onclick="quitarGastoFijo(this)">Eliminar</button>
+            `;
+            container.appendChild(nuevoGasto);
+        }
+        
+        function quitarGastoFijo(boton) {
+            const item = boton.parentNode;
+            item.parentNode.removeChild(item);
+            actualizarGastosFijos();
+            calcularTodo();
+        }
+        
+        function actualizarGastosFijos() {
+            gastosFijos = [];
+            const conceptos = document.querySelectorAll('.gasto-fijo-concepto');
+            const valores = document.querySelectorAll('.gasto-fijo-valor');
+            
+            for (let i = 0; i < conceptos.length; i++) {
+                if (conceptos[i].value && valores[i].value) {
+                    gastosFijos.push({
+                        concepto: conceptos[i].value,
+                        valor: parseFloat(valores[i].value) || 0
+                    });
+                }
+            }
+            
+            // Actualizar total
+            const total = gastosFijos.reduce((sum, gasto) => sum + gasto.valor, 0);
+            document.getElementById('total-gastos-fijos').textContent = total.toFixed(2);
+        }
+        
+        function agregarGastoVariable(plan) {
+            const container = document.getElementById(`gastos-${plan}-container`);
+            const nuevoGasto = document.createElement('div');
+            nuevoGasto.className = 'expense-item';
+            nuevoGasto.innerHTML = `
+                <input type="text" placeholder="Concepto" class="gasto-var-concepto" data-plan="${plan}">
+                <input type="number" placeholder="Cantidad" min="0" class="gasto-var-valor" data-plan="${plan}">
+                <button class="danger" onclick="quitarGastoVariable(this, '${plan}')">Eliminar</button>
+            `;
+            container.appendChild(nuevoGasto);
+        }
+        
+        function quitarGastoVariable(boton, plan) {
+            const item = boton.parentNode;
+            item.parentNode.removeChild(item);
+            actualizarGastosVariables(plan);
+            calcularTodo();
+        }
+        
+        function actualizarGastosVariables(plan) {
+            gastosVariables[plan] = [];
+            const conceptos = document.querySelectorAll(`.gasto-var-concepto[data-plan="${plan}"]`);
+            const valores = document.querySelectorAll(`.gasto-var-valor[data-plan="${plan}"]`);
+            
+            for (let i = 0; i < conceptos.length; i++) {
+                if (conceptos[i].value && valores[i].value) {
+                    gastosVariables[plan].push({
+                        concepto: conceptos[i].value,
+                        valor: parseFloat(valores[i].value) || 0
+                    });
+                }
+            }
+            
+            // Actualizar total
+            const total = gastosVariables[plan].reduce((sum, gasto) => sum + gasto.valor, 0);
+            document.getElementById(`total-gastos-${plan}`).textContent = total.toFixed(2);
+        }
+        
+        function calcularTodo() {
+            // Obtener valores
+            const metaGanancia = parseFloat(document.getElementById('meta-ganancia').value) || 0;
+            const totalGastosFijos = parseFloat(document.getElementById('total-gastos-fijos').textContent) || 0;
+            
+            // Obtener pesos de ventas
+            const pesoBasico = parseFloat(document.getElementById('peso-basico').value) || 0;
+            const pesoRecomendado = parseFloat(document.getElementById('peso-recomendado').value) || 0;
+            const pesoPremium = parseFloat(document.getElementById('peso-premium').value) || 0;
+            const totalPeso = pesoBasico + pesoRecomendado + pesoPremium;
+            document.getElementById('total-peso').textContent = totalPeso;
+            
+            // Calcular ganancias por unidad para cada plan
+            const ganancias = {};
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const tipoGanancia = document.querySelector(`input[name="tipo-ganancia-${plan}"]:checked`).value;
+                const valorGanancia = parseFloat(document.getElementById(`ganancia-${plan}`).value) || 0;
+                const totalGastosVariables = parseFloat(document.getElementById(`total-gastos-${plan}`).textContent) || 0;
+                
+                if (tipoGanancia === 'fija') {
+                    ganancias[plan] = valorGanancia;
+                } else {
+                    // Ganancia como porcentaje sobre costos variables
+                    ganancias[plan] = totalGastosVariables * (valorGanancia / 100);
+                }
+            });
+            
+            // Calcular contribución por unidad para cada plan
+            const contribuciones = {};
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const totalGastosVariables = parseFloat(document.getElementById(`total-gastos-${plan}`).textContent) || 0;
+                contribuciones[plan] = ganancias[plan] + totalGastosVariables;
+            });
+            
+            // Calcular punto de equilibrio
+            const contribucionPonderada = (
+                (contribuciones.basico * pesoBasico) +
+                (contribuciones.recomendado * pesoRecomendado) +
+                (contribuciones.premium * pesoPremium)
+            ) / totalPeso;
+            
+            const ventasEquilibrio = totalGastosFijos / contribucionPonderada;
+            
+            // Calcular ventas para meta de ganancia
+            const ventasMeta = (totalGastosFijos + metaGanancia) / contribucionPonderada;
+            
+            // Actualizar UI con resultados
+            document.getElementById('ventas-equilibrio').textContent = Math.ceil(ventasEquilibrio);
+            document.getElementById('ventas-meta').textContent = Math.ceil(ventasMeta);
+            document.getElementById('ventas-total').textContent = Math.ceil(ventasEquilibrio + ventasMeta);
+            
+            // Calcular desglose de ventas por plan
+            const ventasBasicoEquilibrio = (ventasEquilibrio * pesoBasico) / totalPeso;
+            const ventasRecomendadoEquilibrio = (ventasEquilibrio * pesoRecomendado) / totalPeso;
+            const ventasPremiumEquilibrio = (ventasEquilibrio * pesoPremium) / totalPeso;
+            
+            const ventasBasicoMeta = (ventasMeta * pesoBasico) / totalPeso;
+            const ventasRecomendadoMeta = (ventasMeta * pesoRecomendado) / totalPeso;
+            const ventasPremiumMeta = (ventasMeta * pesoPremium) / totalPeso;
+            
+            document.getElementById('ventas-basico').textContent = Math.ceil(ventasBasicoEquilibrio);
+            document.getElementById('ventas-recomendado').textContent = Math.ceil(ventasRecomendadoEquilibrio);
+            document.getElementById('ventas-premium').textContent = Math.ceil(ventasPremiumEquilibrio);
+            
+            document.getElementById('ventas-meta-basico').textContent = Math.ceil(ventasBasicoMeta);
+            document.getElementById('ventas-meta-recomendado').textContent = Math.ceil(ventasRecomendadoMeta);
+            document.getElementById('ventas-meta-premium').textContent = Math.ceil(ventasPremiumMeta);
+            
+            // Calcular precios con impuestos
+            const impuestoPorcentaje = parseFloat(document.getElementById('impuesto').value) || 0;
+            
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const totalGastosVariables = parseFloat(document.getElementById(`total-gastos-${plan}`).textContent) || 0;
+                const precioBase = totalGastosVariables + ganancias[plan];
+                const impuestoMonto = precioBase * (impuestoPorcentaje / 100);
+                const precioTotal = precioBase + impuestoMonto;
+                
+                // Actualizar tabla de precios
+                document.getElementById(`precio-base-${plan}`).textContent = precioBase.toFixed(2);
+                document.getElementById(`impuesto-${plan}`).textContent = impuestoMonto.toFixed(2);
+                document.getElementById(`precio-total-${plan}`).textContent = precioTotal.toFixed(2);
+                document.getElementById(`ganancia-neta-${plan}`).textContent = ganancias[plan].toFixed(2);
+                
+                // Actualizar resumen para el empresario
+                document.getElementById(`resumen-costo-${plan}`).textContent = totalGastosVariables.toFixed(2);
+                document.getElementById(`resumen-impuesto-${plan}`).textContent = impuestoPorcentaje;
+                document.getElementById(`resumen-ganancia-${plan}`).textContent = ganancias[plan].toFixed(2);
+                
+                // Actualizar resumen para el cliente
+                document.getElementById(`cliente-precio-base-${plan}`).textContent = precioBase.toFixed(2);
+                document.getElementById(`cliente-impuesto-${plan}`).textContent = impuestoMonto.toFixed(2);
+                document.getElementById(`cliente-precio-total-${plan}`).textContent = precioTotal.toFixed(2);
+            });
+        }
+        
+        // Función para guardar todos los datos
+        function guardarDatos() {
+            const datos = {
+                moneda: document.getElementById('moneda').value,
+                metaGanancia: document.getElementById('meta-ganancia').value,
+                gastosFijos: [],
+                gastosVariables: {
+                    basico: [],
+                    recomendado: [],
+                    premium: []
+                },
+                tipoGanancia: {
+                    basico: document.querySelector('input[name="tipo-ganancia-basico"]:checked').value,
+                    recomendado: document.querySelector('input[name="tipo-ganancia-recomendado"]:checked').value,
+                    premium: document.querySelector('input[name="tipo-ganancia-premium"]:checked').value
+                },
+                ganancia: {
+                    basico: document.getElementById('ganancia-basico').value,
+                    recomendado: document.getElementById('ganancia-recomendado').value,
+                    premium: document.getElementById('ganancia-premium').value
+                },
+                pesos: {
+                    basico: document.getElementById('peso-basico').value,
+                    recomendado: document.getElementById('peso-recomendado').value,
+                    premium: document.getElementById('peso-premium').value
+                },
+                impuesto: document.getElementById('impuesto').value
+            };
+            
+            // Guardar gastos fijos
+            const conceptosFijos = document.querySelectorAll('.gasto-fijo-concepto');
+            const valoresFijos = document.querySelectorAll('.gasto-fijo-valor');
+            
+            for (let i = 0; i < conceptosFijos.length; i++) {
+                datos.gastosFijos.push({
+                    concepto: conceptosFijos[i].value,
+                    valor: valoresFijos[i].value
+                });
+            }
+            
+            // Guardar gastos variables
+            ['basico', 'recomendado', 'premium'].forEach(plan => {
+                const conceptos = document.querySelectorAll(`.gasto-var-concepto[data-plan="${plan}"]`);
+                const valores = document.querySelectorAll(`.gasto-var-valor[data-plan="${plan}"]`);
+                
+                for (let i = 0; i < conceptos.length; i++) {
+                    datos.gastosVariables[plan].push({
+                        concepto: conceptos[i].value,
+                        valor: valores[i].value
+                    });
+                }
+            });
+            
+            // Guardar en localStorage
+            localStorage.setItem('calculadoraDatos', JSON.stringify(datos));
+            
+            // Mostrar notificación
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Función para cargar datos guardados
+        function cargarDatosGuardados() {
+            const datosGuardados = localStorage.getItem('calculadoraDatos');
+            
+            if (datosGuardados) {
+                const datos = JSON.parse(datosGuardados);
+                
+                // Cargar moneda
+                document.getElementById('moneda').value = datos.moneda;
+                document.querySelectorAll('.currency-symbol').forEach(el => {
+                    el.textContent = datos.moneda;
+                });
+                
+                // Cargar meta de ganancia
+                document.getElementById('meta-ganancia').value = datos.metaGanancia;
+                
+                // Cargar gastos fijos
+                const containerGastosFijos = document.getElementById('gastos-fijos-container');
+                containerGastosFijos.innerHTML = '';
+                
+                datos.gastosFijos.forEach(gasto => {
+                    const nuevoGasto = document.createElement('div');
+                    nuevoGasto.className = 'expense-item';
+                    nuevoGasto.innerHTML = `
+                        <input type="text" placeholder="Concepto" class="gasto-fijo-concepto" value="${gasto.concepto}">
+                        <input type="number" placeholder="Cantidad" min="0" class="gasto-fijo-valor" value="${gasto.valor}">
+                        <button class="danger" onclick="quitarGastoFijo(this)">Eliminar</button>
+                    `;
+                    containerGastosFijos.appendChild(nuevoGasto);
+                });
+                
+                // Cargar gastos variables
+                ['basico', 'recomendado', 'premium'].forEach(plan => {
+                    const container = document.getElementById(`gastos-${plan}-container`);
+                    container.innerHTML = '';
+                    
+                    datos.gastosVariables[plan].forEach(gasto => {
+                        const nuevoGasto = document.createElement('div');
+                        nuevoGasto.className = 'expense-item';
+                        nuevoGasto.innerHTML = `
+                            <input type="text" placeholder="Concepto" class="gasto-var-concepto" data-plan="${plan}" value="${gasto.concepto}">
+                            <input type="number" placeholder="Cantidad" min="0" class="gasto-var-valor" data-plan="${plan}" value="${gasto.valor}">
+                            <button class="danger" onclick="quitarGastoVariable(this, '${plan}')">Eliminar</button>
+                        `;
+                        container.appendChild(nuevoGasto);
+                    });
+                });
+                
+                // Cargar tipo de ganancia
+                document.querySelector(`input[name="tipo-ganancia-basico"][value="${datos.tipoGanancia.basico}"]`).checked = true;
+                document.querySelector(`input[name="tipo-ganancia-recomendado"][value="${datos.tipoGanancia.recomendado}"]`).checked = true;
+                document.querySelector(`input[name="tipo-ganancia-premium"][value="${datos.tipoGanancia.premium}"]`).checked = true;
+                
+                // Cargar valores de ganancia
+                document.getElementById('ganancia-basico').value = datos.ganancia.basico;
+                document.getElementById('ganancia-recomendado').value = datos.ganancia.recomendado;
+                document.getElementById('ganancia-premium').value = datos.ganancia.premium;
+                
+                // Cargar pesos
+                document.getElementById('peso-basico').value = datos.pesos.basico;
+                document.getElementById('peso-recomendado').value = datos.pesos.recomendado;
+                document.getElementById('peso-premium').value = datos.pesos.premium;
+                
+                // Cargar impuesto
+                document.getElementById('impuesto').value = datos.impuesto;
+                
+                // Actualizar sufijos de ganancia
+                actualizarSufijosGanancia();
+                
+                // Actualizar gastos
+                actualizarGastosFijos();
+                ['basico', 'recomendado', 'premium'].forEach(plan => {
+                    actualizarGastosVariables(plan);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
